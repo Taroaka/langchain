@@ -154,8 +154,7 @@ class AzureOpenAIWhisperParser(BaseBlobParser):
             azure_endpoint=self.base_url)
         except ImportError:
             raise ImportError(
-                "openai package not found, please install it with "
-                "`pip install openai`"
+                "openai package not found, please install it with `pip install openai`"
             )
 
         if is_openai_v1():
@@ -254,6 +253,7 @@ class OpenAIWhisperParser(BaseBlobParser):
             Literal["json", "text", "srt", "verbose_json", "vtt"], None
         ] = None,
         temperature: Union[float, None] = None,
+        model: str = "whisper-1",
     ):
         self.api_key = api_key
         self.chunk_duration_threshold = chunk_duration_threshold
@@ -264,6 +264,7 @@ class OpenAIWhisperParser(BaseBlobParser):
         self.prompt = prompt
         self.response_format = response_format
         self.temperature = temperature
+        self.model = model
 
     @property
     def _create_params(self) -> Dict[str, Any]:
@@ -288,14 +289,13 @@ class OpenAIWhisperParser(BaseBlobParser):
             azure_endpoint=self.base_url)
         except ImportError:
             raise ImportError(
-                "openai package not found, please install it with "
-                "`pip install openai`"
+                "openai package not found, please install it with `pip install openai`"
             )
         try:
             from pydub import AudioSegment
         except ImportError:
             raise ImportError(
-                "pydub package not found, please install it with " "`pip install pydub`"
+                "pydub package not found, please install it with `pip install pydub`"
             )
 
         if is_openai_v1():
@@ -334,7 +334,7 @@ class OpenAIWhisperParser(BaseBlobParser):
                 try:
                     if is_openai_v1():
                         transcript = client.audio.transcriptions.create(
-                            model="whisper-1", file=file_obj, **self._create_params
+                            model=self.model, file=file_obj, **self._create_params
                         )
                     else:
                         transcript = client.audio.transcribe("whisper-1", file_obj)  # type: ignore[attr-defined]
@@ -410,7 +410,7 @@ class OpenAIWhisperParserLocal(BaseBlobParser):
             import torch
         except ImportError:
             raise ImportError(
-                "torch package not found, please install it with " "`pip install torch`"
+                "torch package not found, please install it with `pip install torch`"
             )
 
         # Determine the device to use
@@ -541,7 +541,7 @@ class YandexSTTParser(BaseBlobParser):
             from pydub import AudioSegment
         except ImportError:
             raise ImportError(
-                "pydub package not found, please install it with " "`pip install pydub`"
+                "pydub package not found, please install it with `pip install pydub`"
             )
 
         if self.api_key:
