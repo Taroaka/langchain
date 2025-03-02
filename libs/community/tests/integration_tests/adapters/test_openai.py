@@ -4,23 +4,29 @@ from langchain_community.adapters import openai as lcopenai
 
 
 def _test_no_stream(**kwargs: Any) -> None:
-    import openai
+    from openai import OpenAI, AsyncOpenAI
+    
+    client = OpenAI()
+    aclient = AsyncOpenAI()
 
-    result = openai.ChatCompletion.create(**kwargs)  # type: ignore[attr-defined]
+    result = client.chat.completions.create(**kwargs)  # type: ignore[attr-defined]
     lc_result = lcopenai.ChatCompletion.create(**kwargs)
     if isinstance(lc_result, dict):
         if isinstance(result, dict):
-            result_dict = result["choices"][0]["message"].to_dict_recursive()
+            result_dict = result.choices[0].message.to_dict_recursive()
             lc_result_dict = lc_result["choices"][0]["message"]
             assert result_dict == lc_result_dict
     return
 
 
 def _test_stream(**kwargs: Any) -> None:
-    import openai
+    from openai import OpenAI, AsyncOpenAI
+    
+    client = OpenAI()
+    aclient = AsyncOpenAI()
 
     result = []
-    for c in openai.ChatCompletion.create(**kwargs):  # type: ignore[attr-defined]
+    for c in client.chat.completions.create(**kwargs):  # type: ignore[attr-defined]
         result.append(c["choices"][0]["delta"].to_dict_recursive())
 
     lc_result = []
@@ -30,23 +36,29 @@ def _test_stream(**kwargs: Any) -> None:
 
 
 async def _test_async(**kwargs: Any) -> None:
-    import openai
+    from openai import OpenAI, AsyncOpenAI
+    
+    client = OpenAI()
+    aclient = AsyncOpenAI()
 
-    result = await openai.ChatCompletion.acreate(**kwargs)  # type: ignore[attr-defined]
+    result = await aclient.chat.completions.create(**kwargs)  # type: ignore[attr-defined]
     lc_result = await lcopenai.ChatCompletion.acreate(**kwargs)
     if isinstance(lc_result, dict):
         if isinstance(result, dict):
-            result_dict = result["choices"][0]["message"].to_dict_recursive()
+            result_dict = result.choices[0].message.to_dict_recursive()
             lc_result_dict = lc_result["choices"][0]["message"]
             assert result_dict == lc_result_dict
     return
 
 
 async def _test_astream(**kwargs: Any) -> None:
-    import openai
+    from openai import OpenAI, AsyncOpenAI
+    
+    client = OpenAI()
+    aclient = AsyncOpenAI()
 
     result = []
-    async for c in await openai.ChatCompletion.acreate(**kwargs):  # type: ignore[attr-defined]
+    async for c in await aclient.chat.completions.create(**kwargs):  # type: ignore[attr-defined]
         result.append(c["choices"][0]["delta"].to_dict_recursive())
 
     lc_result = []
